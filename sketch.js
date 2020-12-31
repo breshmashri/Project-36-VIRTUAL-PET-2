@@ -6,6 +6,7 @@ var doghouse, doghouseImg;
 var feedButton,addFoodButton;
 var food,foodS,foodStock;
 var fedTime;
+var lastTime;
 var readState,gameState;
 
 function preload(){
@@ -30,16 +31,12 @@ function setup(){
   doghouse.scale = 0.2;
 
   foodStock = database.ref('Food');
-  foodStock.on("value",readStock);
+  foodStock.on("value", readStock);
   
   food = new Food();
 
-  fedTime = database.ref('fedTime');
-  fedTime.on("value",function(data){
-    fedTime = data.val();
-  });
   readState = database.ref('gameState');
-  readState.on("value",function(data){
+  readState.on("value", function(data){
     gameState = data.val();
   });
   feedButton = createButton("Feed The Dog");
@@ -54,24 +51,27 @@ function draw(){
   currentTime = hour();
   background(46, 139, 87);  
   food.display();
+  food.getTime();
   drawSprites();
   textSize(20);
   fill("white");
-  text("Food Remaining: "+foodS, 170, 100);
-  if(fedTime >= 12){
-    fill("white");
-    textSize(15); 
-    text("Last Fed : "+ fedTime%12 + " PM", 350, 30);
-  }
-  else if(fedTime == 0){
-    fill("white");
-    textSize(15); 
-    text("Last Fed : 12 AM", 350, 30);
-  }
-  else{
-    fill("white");
-    textSize(15); 
-    text("Last Fed : "+ fedTime + " AM", 350, 30);
+  text("Food Remaining: " +foodS, 170, 100);
+  if(lastTime!=undefined){
+    if(lastTime >= 12){
+      fill("white");
+      textSize(15); 
+      text("Last Fed : "+ lastTime%12 + " PM", 350, 30);
+    }
+    else if(lastTime === 0){
+      fill("white");
+      textSize(15); 
+      text("Last Fed : 12 AM", 350, 30);
+    }
+    else{
+      fill("white");
+      textSize(15); 
+      text("Last Fed : "+ lastTime + " AM", 350, 30);
+    }
   }
 }
 
@@ -85,7 +85,7 @@ function feedDog(){
     foodS--;
     database.ref('/').update({
       Food : foodS
-    })
+    });
     fedTime = hour(); 
 }
 
@@ -93,6 +93,7 @@ function addFood(){
   dog.addImage(dogImg);
   foodS++;
   database.ref('/').update({
-    Food:foodS
+    Food : foodS
   });
+  updateTime = hour();
 }
