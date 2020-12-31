@@ -95,5 +95,5 @@ function addFood(){
   database.ref('/').update({
     Food : foodS
   });
-  updateTime = hour();
+  updateTime(hour());
 }
