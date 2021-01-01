@@ -57,7 +57,7 @@ function draw(){
   fill("white");
   text("Food Remaining: " +foodS, 170, 100);
   if(lastTime!=undefined){
-    if(lastTime >= 12){
+    if(lastTime > 12){
       fill("white");
       textSize(15); 
       text("Last Fed : "+ lastTime%12 + " PM", 350, 30);
@@ -66,6 +66,11 @@ function draw(){
       fill("white");
       textSize(15); 
       text("Last Fed : 12 AM", 350, 30);
+    }
+    else if(lastTime === 12){
+      fill("white");
+      textSize(15); 
+      text("Last Fed : 12 PM", 350, 30);
     }
     else{
       fill("white");
@@ -86,7 +91,7 @@ function feedDog(){
     database.ref('/').update({
       Food : foodS
     });
-    fedTime = hour(); 
+    food.updateTime(hour());
 }
 
 function addFood(){
@@ -95,5 +100,4 @@ function addFood(){
   database.ref('/').update({
     Food : foodS
   });
-  updateTime(hour());
 }
